@@ -1,5 +1,4 @@
 from flask import Flask, render_template
-from tabulate import tabulate
 from Inzidenzraumcreator import generate_inzidenzraum_by_line, generate_inzidenzraum_by_point
 
 app = Flask(__name__)
