@@ -3,6 +3,8 @@ import pandas as pd
 import itertools as it
 from random import choice, shuffle
 import signal
+import itertools
+
 
 def check_inzidenzraum(m: np.array):
     if type(m) is not np.ndarray:
@@ -86,7 +88,7 @@ def generate_matrix_point_by_point(size: int) -> np.ndarray:
         one_indexes = list(previous_row.nonzero()[0])
         shuffle(one_indexes)
         random_one_index = one_indexes.pop()
-        
+
         try:
             signal.signal(signal.SIGALRM, handler)
             signal.setitimer(signal.ITIMER_REAL, 0.1)
@@ -133,20 +135,35 @@ def generate_matrix_line_by_line(size: int) -> np.array:
     return matrix
 
 
+def generate_column_labels():
+
+    number_letters = 1
+    chars = "abcdefghijklmnopqrstuvwxyz"
+    while True:
+        for item in itertools.product(chars, repeat=number_letters):
+            yield ''.join(item)
+        number_letters += 1
+
+
 def create_inzidenzraum_df(matrix: np.array):
-    df = pd.DataFrame(matrix)
-    df['#line'] = df.sum(axis=1)
-    df.loc['#points'] = df.sum()
-    df.at['#points', '#line'] = 0
+    column_labels = itertools.islice(generate_column_labels(), matrix.shape[1])
+
+    df = pd.DataFrame(matrix, columns=column_labels)
+
+    df.index = np.arange(1, len(df) + 1)  # start rows with one
+    df['#lines through point'] = df.sum(axis=1)
+    df.loc['#points on line'] = df.sum()
+    df.at['#points on line', '#lines through point'] = 0
+
     return df
 
 
 def generate_inzidenzraum_by_point(number_lines: int) -> pd.DataFrame:
-    
+
     matrix = None
     while not check_inzidenzraum(matrix):
         matrix = generate_matrix_point_by_point(number_lines)
-    
+
     signal.alarm(0)
     return create_inzidenzraum_df(matrix)
 
