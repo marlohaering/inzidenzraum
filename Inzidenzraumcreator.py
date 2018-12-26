@@ -158,7 +158,7 @@ def create_inzidenzraum_df(matrix: np.array):
     return df
 
 
-def generate_inzidenzraum_by_point(number_lines: int) -> pd.DataFrame:
+def generate_inzidenzraum_with_lines(number_lines: int) -> pd.DataFrame:
 
     matrix = None
     while not check_inzidenzraum(matrix):
@@ -168,7 +168,7 @@ def generate_inzidenzraum_by_point(number_lines: int) -> pd.DataFrame:
     return create_inzidenzraum_df(matrix)
 
 
-def generate_inzidenzraum_by_line(number_points: int) -> pd.DataFrame:
+def generate_inzidenzraum_with_points(number_points: int) -> pd.DataFrame:
     matrix = None
     while not check_inzidenzraum(matrix):
         matrix = generate_matrix_line_by_line(number_points)
@@ -177,4 +177,4 @@ def generate_inzidenzraum_by_line(number_points: int) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    print(generate_inzidenzraum_by_point(6))
+    print(generate_inzidenzraum_with_points(6))
