@@ -27,7 +27,7 @@ def text_to_lines(text: str):
 
 @app.route('/points', methods=['GET', 'POST'])
 def points_with_lines():
-    data = request.form['lines']
+    data = request.form.get('lines',False)
     if data:
         lines = text_to_lines(data)
         df = generate_inzidenzraum_with_points(None, lines)
