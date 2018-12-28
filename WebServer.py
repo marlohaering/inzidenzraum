@@ -25,7 +25,7 @@ def text_to_lines(text: str):
     return np.array(numbers)
 
 
-@app.route('/points', methods=['POST'])
+@app.route('/points', methods=['GET', 'POST'])
 def points_with_lines():
     data = request.form['lines']
     if data:
