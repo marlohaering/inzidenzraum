@@ -112,18 +112,30 @@ def generate_new_line_with_at_least_two_points(size):
             return line
 
 
-def generate_matrix_line_by_line(size: int) -> np.array:
-    matrix = np.empty((size, size*10), dtype=np.int8)
-    first_column = generate_new_line_with_at_least_two_points(size)
-    matrix[:, 0] = first_column
+def generate_matrix_line_by_line(number_of_points: int, first_columns: np.array = None) -> np.array:
 
-    if check_inzidenzraum(matrix[:, :1]):
-        return matrix[:, :1]
+    if isinstance(first_columns, np.ndarray):
+        number_of_points = first_columns.shape[1]
+        number_of_lines = first_columns.shape[0]
+        matrix = np.empty((number_of_points, 100), dtype=np.int8)
+        matrix[:, :number_of_lines] = np.transpose(first_columns)
+    else:
+        matrix = np.empty(
+            (number_of_points, number_of_points*10), dtype=np.int8)
+        first_column = generate_new_line_with_at_least_two_points(
+            number_of_points)
+        matrix[:, 0] = first_column
+        number_of_lines = 1
 
-    for column in range(1, size*10):  # todo: mal 10 willkürlich
+    if check_inzidenzraum(matrix[:, :number_of_lines]):
+        return matrix[:, :number_of_lines]
+
+    # todo: mal 10 willkürlich
+    for column in range(number_of_lines, matrix.shape[1]):
 
         while True:
-            next_column = generate_new_line_with_at_least_two_points(size)
+            next_column = generate_new_line_with_at_least_two_points(
+                number_of_points)
             if check_previous_columns(matrix[:, :column], next_column):
                 break
 
@@ -168,13 +180,21 @@ def generate_inzidenzraum_with_lines(number_lines: int) -> pd.DataFrame:
     return create_inzidenzraum_df(matrix)
 
 
-def generate_inzidenzraum_with_points(number_points: int) -> pd.DataFrame:
+def generate_inzidenzraum_with_points(number_points: int, lines=None) -> pd.DataFrame:
     matrix = None
     while not check_inzidenzraum(matrix):
-        matrix = generate_matrix_line_by_line(number_points)
+        if isinstance(lines, np.ndarray):
+            matrix = generate_matrix_line_by_line(None, lines)
+        else:
+            matrix = generate_matrix_line_by_line(number_points)
 
     return create_inzidenzraum_df(matrix)
 
 
 if __name__ == "__main__":
-    print(generate_inzidenzraum_with_points(6))
+    lines = np.array([
+        [1, 1, 1, 1, 0, 0, 0, 0, 0, 0],
+        [1, 0, 0, 0, 1, 1, 1, 0, 0, 0],
+        [1, 0, 0, 0, 0, 0, 0, 1, 1, 1]
+    ])
+    print(generate_inzidenzraum_with_points(None, lines))
