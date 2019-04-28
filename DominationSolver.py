@@ -12,20 +12,41 @@ solution_bounds = {}
 depth = 1
 
 
+def createGraph(edges: str):
+    """
+    Creates a graph from string
+    :param edges: format: node<SPACE>node
+    :return: Graph
+    """
+    lines = edges.split('\n')
+    G = nx.Graph()
+    for line in lines:
+        node1, node2 = line.split()
+        G.add_edge(node1, node2)
+    return G
+
+
 def createGaph1():
     G = nx.Graph()
-    G.add_edge('a', 'b')
-    G.add_edge('b', 'h')
-    G.add_edge('h', 'i')
-    G.add_edge('i', 'f')
-    G.add_edge('f', 'a')
-    G.add_edge('a', 'c')
-    G.add_edge('c', 'f')
-    G.add_edge('c', 'j')
-    G.add_edge('a', 'd')
-    G.add_edge('d', 'g')
-    G.add_edge('d', 'e')
-    G.add_edge('a', 'e')
+    for i in range(29):
+        G.add_edge(str(i+1), str(i+2))
+    G.add_edge('30', '1')
+    
+    G.add_edge('1', '10')
+    G.add_edge('2', '15')
+    G.add_edge('3', '20')
+    G.add_edge('4', '25')
+    G.add_edge('5', '12')
+    G.add_edge('6', '29')
+    G.add_edge('7', '16')
+    G.add_edge('8', '21')
+    G.add_edge('9', '26')
+    G.add_edge('10', '1')
+    G.add_edge('11', '18')
+    G.add_edge('12', '5')
+    G.add_edge('13', '22')
+    G.add_edge('14', '27')
+
     return G
 
 
@@ -79,7 +100,8 @@ def try_next_solution():
             return solution_without_node
 
         solution_bounds[solution_with_node] = solution_with_node.get_lower_bound()
-        solution_bounds[solution_without_node] = solution_without_node.get_lower_bound()
+        solution_bounds[solution_without_node] = solution_without_node.get_lower_bound(
+        )
 
         # print(solution_with_node)
         # print(solution_without_node)
@@ -101,14 +123,16 @@ def draw_graph(G):
 def get_domination_set_approx(G):
     solution_set = SolutionSet(set(), set(), G, 1)
     mv = max(solution_set.W_values.values())
-    max_node = random.choice([k for (k, v) in solution_set.W_values.items() if v == mv])
+    max_node = random.choice(
+        [k for (k, v) in solution_set.W_values.items() if v == mv])
 
     while solution_set.W_values[max_node] > 0:
         print('Added: ', max_node)
         solution_set.add_s(max_node)
 
         mv = max(solution_set.W_values.values())
-        max_node = random.choice([k for (k, v) in solution_set.W_values.items() if v == mv])
+        max_node = random.choice(
+            [k for (k, v) in solution_set.W_values.items() if v == mv])
 
     return solution_set.S
 
@@ -129,10 +153,9 @@ def get_domination_set(G, radius=1):
 
 
 if __name__ == '__main__':
-    G = createGaph2()
-    domination_set = get_domination_set_approx(G)
-
-    draw_graph(G)
-
+    G = createGaph1()
+    domination_set = get_domination_set(G)
     print('domination_set: ', [str(node) for node in domination_set])
     print('#nodes: ', len(domination_set))
+
+    # draw_graph(G)
