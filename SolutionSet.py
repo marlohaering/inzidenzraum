@@ -40,8 +40,6 @@ class SolutionSet(object):
             covered_nodes.update(self.get_ball(node, self.radius))
         return covered_nodes
 
-        return nodes
-
     def get_ball(self, node, radius):
         # nodes = set()
         # nodes.add(node)
@@ -49,7 +47,6 @@ class SolutionSet(object):
         # return nodes
 
         return set([node] + list(self.G.neighbors(node)))  # For radius = 1
-
 
         # nodes = set()
         # nodes.add(node)
